@@ -10,7 +10,7 @@
 }
 
 #client-container {
-    width: min(30%, 500px);
+    width: clamp(300px, 30%, 500px);
     border-right: 1px solid var(--secondary-color);
 }
 
@@ -27,6 +27,8 @@
     position: absolute;
     right: 10px;
     top: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 #peers-controls-container {
@@ -36,7 +38,20 @@
 }
 
 #stats-container {
+    color: white;
+    padding-inline: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#stats-container div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#stats-container .icon {
     color: var(--secondary-color);
+    width: 20px;
 }
 
 .pc-peer {
@@ -52,6 +67,10 @@
     margin: 0px;
 }
 
+.pc-peer .bitrate {
+    color: white;
+}
+
 .pc-peer-btn-container {
     display: flex;
     align-items: center;
@@ -59,7 +78,7 @@
 }
 
 .pc-peer-start-btn, .pc-peer-stop-btn {
-    color: var(--secondary-color);
+    color: white;
     background-color: transparent;
     border: none;
 }
@@ -69,4 +88,44 @@
     text-align: center;
     display: block;
     margin-top: 20px;
+}
+
+#peers-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 2;
+    gap: 20px;
+}
+
+.peer {
+    position: relative;
+    width: 200px;
+    min-height: 100px;
+    background-color: var(--background-light-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.peer-name {
+    position: absolute;
+    margin: 0px;
+    padding: 10px;
+    color: var(--secondary-color);
+    left: 0px;
+    top: 0px;
+}
+
+.peer-stream {
+    width: 100%;
+    display: block;
+}
+
+.peer-no-stream {
+    color: white;
+}
+
+.bitrate {
+    margin: 0px;
 }

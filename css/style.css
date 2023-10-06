@@ -1,8 +1,12 @@
 :root {
     --background-color: rgb(17, 12, 24);
-    --background-light-color: rgb(30, 24, 39);
+    --background-light-color: rgb(80, 71, 92);
     --primary-color: #2d0080;
     --secondary-color: #ffee00;
+}
+
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body, html {
@@ -15,10 +19,9 @@ body, html {
 .btn {
     color: var(--primary-color);
     background-color: var(--secondary-color);
-    border-radius: 10px;
     border: none;
     padding: 10px;
-    box-shadow: 0px 0px 10px black;
+    box-shadow: 0px 0px 10px rgb(34, 34, 34);
 }
 
 button:not(:disabled):hover {
@@ -26,10 +29,17 @@ button:not(:disabled):hover {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .split {
     border-color: var(--secondary-color);
     margin: 0px;
+}
+
+.icon {
+    width: 2em;
+    height: 2em;
+    vertical-align: -0.125em;
+    color: var(--primary-color);
 }
