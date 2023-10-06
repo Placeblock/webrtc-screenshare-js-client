@@ -108,13 +108,20 @@
     align-items: center;
 }
 
-.peer-name {
+.peer-info {
+    box-sizing: border-box;
     position: absolute;
-    margin: 0px;
     padding: 10px;
     color: var(--secondary-color);
     left: 0px;
     top: 0px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.peer-name {
+    margin: 0px;
 }
 
 .peer-stream {

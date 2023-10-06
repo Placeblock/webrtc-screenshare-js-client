@@ -1,0 +1,40 @@
+#join {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+#join h1 {
+    color: var(--secondary-color);
+}
+
+#join label {
+    color: white;
+    display: block;
+}
+
+#join input {
+    border: none;
+    padding: 10px;
+    width: 250px;
+    max-width: 95%;
+}
+
+#join input:focus {
+    outline: none;
+}
+
+#join-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#join button {
+    display: block;
+}

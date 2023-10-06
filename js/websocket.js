@@ -1,0 +1,1 @@
+const socket = new WebSocket("wss://stream.codelix.de/wss");

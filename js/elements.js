@@ -11,6 +11,7 @@ function createPeerControlElement(name, onStart, onStop) {
     element.appendChild(nameElement);
     element.appendChild(bitrateElement);
     element.appendChild(buttonsElement);
+    element.setBitrate = bitrateElement.setBitrate;
     return element;
 }
 
@@ -37,15 +38,20 @@ function createPeerControlButtonsElement(onStart, onStop) {
 function createPeerElement(name) {
     const peerElement = document.createElement("div");
     peerElement.className = "peer";
+    const peerInfoElement = document.createElement("div");
+    peerInfoElement.className = "peer-info"
     const peerNameElement = document.createElement("p");
     peerNameElement.innerText = name;
     peerNameElement.className = "peer-name";
+    peerInfoElement.appendChild(peerNameElement);
+    const bitrateInfoElement = createBitrateInfoElement();
+    peerInfoElement.appendChild(bitrateInfoElement);
     const peerStreamElement = document.createElement("video");
     peerStreamElement.className = "peer-stream hidden";
     const noStreamElement = document.createElement("p");
     noStreamElement.className = "peer-no-stream";
     noStreamElement.innerText = "Not streaming";
-    peerElement.appendChild(peerNameElement);
+    peerElement.appendChild(peerInfoElement);
     peerElement.appendChild(noStreamElement);
     peerElement.appendChild(peerStreamElement);
     peerElement.setStream = (stream) => {
@@ -58,6 +64,7 @@ function createPeerElement(name) {
             peerStreamElement.classList.add("hidden");
         }
     }
+    peerElement.setBitrate = bitrateInfoElement.setBitrate;
     return peerElement;
 }
 
