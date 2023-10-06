@@ -1,0 +1,72 @@
+#room {
+    height: 100%;
+    display: flex;
+}
+
+#room-content {
+    flex-grow: 2;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#client-container {
+    width: min(30%, 500px);
+    border-right: 1px solid var(--secondary-color);
+}
+
+#client-stream-container {
+    position: relative;
+}
+
+#client-stream-container video {
+    width: 100%;
+    display: block;
+}
+
+#client-stream-buttons {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+#peers-controls-container {
+    list-style: none;
+    padding-left: 0px;
+    margin: 0px;
+}
+
+#stats-container {
+    color: var(--secondary-color);
+}
+
+.pc-peer {
+    background-color: var(--background-light-color);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pc-peer-name {
+    color: var(--secondary-color);
+    margin: 0px;
+}
+
+.pc-peer-btn-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pc-peer-start-btn, .pc-peer-stop-btn {
+    color: var(--secondary-color);
+    background-color: transparent;
+    border: none;
+}
+
+#share-link {
+    color: var(--secondary-color);
+    text-align: center;
+    display: block;
+    margin-top: 20px;
+}

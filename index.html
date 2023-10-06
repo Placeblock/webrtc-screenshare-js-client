@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/room.css">
+</head>
+<body>
+    <div id="join">
+        <div id="password">
+
+        </div>
+        <div id="name">
+
+        </div>
+        <div id="code">
+            <div id="room-input">
+
+            </div>
+        </div>
+    </div>
+    <div id="room">
+        <div id="room-content">
+            <div id="client-container">
+                <div id="client-stream-container">
+                    <div id="client-stream-buttons">
+                        <button id="select-stream-btn" class="btn">Stream</button>
+                        <button id="stream-settings-btn" class="btn">Settings</button>
+                    </div>
+                    <video id="client-stream" loop muted autoplay src="https://tekeye.uk/html/images/Joren_Falls_Izu_Jap.webm"></video>
+                </div>
+                <hr class="split">
+                <div id="stats-container">
+                    <p>Up: <span id="upload-bitrate-value"></span> Down: <span id="download-bitrate-value"></span></p>
+                </div>
+                <hr class="split">
+                <ul id="peers-controls-container">
+                    
+                </ul>
+                <a id="share-link">Invite others</a>
+            </div>
+            <div id="peers-container">
+    
+            </div>
+        </div>
+
+        <div class="hidden" id="stream-settings">
+            <p id="stream-settings-description"><b>How will others see your source?</b></p>
+            <div>
+                <label>Auto-Share stream to new users: </label>
+                <input type="checkbox"></input>
+            </div>
+            <label>Minimized Quality: <span class="settings-value" id="minimized-quality-value">-1</span> %</label>
+            <input type="range" step={0.01} min={0.05} max={1}></input>
+            <label>Fullscreen Quality: <span class="settings-value" id="fullscreen-quality-value">-1</span> %</label>
+            <input type="range" step={0.01} min={0.05} max={1}></input>
+            <label>Minimized Framerate: <span class="settings-value" id="minimized-framerate-value">-1</span> fps</label>
+            <input type="range" min={2} max={120}></input>
+            <label>Fullscreen Framerate: <span class="settings-value" id="fullscreen-framerate-value">-1</span> fps</label>
+            <input type="range" min={2} max={120}></input>
+            <div class="stream-settings-controls"> 
+                <button class="save-btn secondary-btn">Save</button>    
+            </div>
+        </div>
+    </div>
+
+    <script src="js/elements.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
