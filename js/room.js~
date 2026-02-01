@@ -1,8 +1,8 @@
-import { createPeerControlElement, createPeerElement } from "./elements.js";
-import Peer from "./peerdata.js";
-import { getSettings, onSettingsUpdate } from "./settings.js";
-import { State, setState } from "./state.js";
-import { registerMessageHandler, sendMessage } from "./websocket.js";
+import { createPeerControlElement, createPeerElement } from "./elements";
+import Peer from "./peerdata";
+import { getSettings, onSettingsUpdate } from "./settings";
+import { State, setState } from "./state";
+import { registerMessageHandler, sendMessage } from "./websocket";
 
 const stopStreamButton = document.getElementById("stop-stream-btn");
 const shareLinkButton = document.getElementById("share-link");
@@ -64,19 +64,12 @@ function removePeer(uuid) {
     const peer = peers[uuid];
     if (peer === undefined) return;
     peer.remove();
-    delete peers[uuid];
 }
 
 stopStreamButton.onclick = () => {
     stopStream();
 }
 
-document.getElementById("select-camera-btn").onclick = () => {
-    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(newstream => {
-        stopStream();
-	    setStream(newstream);
-    });
-}
 document.getElementById("select-stream-btn").onclick = () => {
     navigator.mediaDevices.getDisplayMedia({audio: true}).then(newstream => {
         stopStream();
@@ -126,7 +119,9 @@ setInterval(() => {
         receivingBitrate+=peer.receivingBitRate;
 
         // Cleanup inactive transceivers
+        console.log("Transceivers: "+ peer.connection.getTransceivers().length);
         peer.connection.getTransceivers().forEach(t => {
+            console.log(t.currentDirection);
             if (t.currentDirection === "inactive") {
                 t.stop();
             }

@@ -9,18 +9,45 @@
     flex-wrap: wrap;
 }
 
+@media screen and (max-width: 800px) {
+    #room {
+        flex-wrap: wrap;
+    }
+
+    #client-container {
+        width: 100%;
+        border-bottom: 1px solid var(--secondary-color);
+    }
+}
+@media screen and (min-width: 801px) {
+    #client-container {
+        width: clamp(300px, 30%, 500px);
+        border-right: 1px solid var(--secondary-color);
+    }
+}
+
 #client-container {
-    width: clamp(300px, 30%, 500px);
-    border-right: 1px solid var(--secondary-color);
+    display: flex;
+    flex-direction: column;
 }
 
 #client-stream-container {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+    max-height: 250px;
 }
 
-#client-stream-container video {
+#client-stream {
     width: 100%;
+    object-fit: contain;
     display: block;
+}
+
+#no-client-stream {
+    color: var(--secondary-color);
 }
 
 #client-stream-buttons {
@@ -88,6 +115,9 @@
     text-align: center;
     display: block;
     margin-top: 20px;
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
 }
 
 #peers-container {
@@ -96,16 +126,25 @@
     align-items: center;
     flex-grow: 2;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .peer {
     position: relative;
-    width: 200px;
+    width: 300px;
     min-height: 100px;
     background-color: var(--background-light-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+.peer.theather {
+    position: fixed;
+    z-index: 5;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 95%;
+    height: 95%;
+    object-fit: contain;
 }
 
 .peer-info {
@@ -126,11 +165,58 @@
 
 .peer-stream {
     width: 100%;
+    height: 100%;
+    object-fit: contain;
     display: block;
+}
+
+.peer.theather .peer-stream {
+    height: 100%;
+}
+
+.peer:not(.theather):not(:fullscreen) .peer-stream {
+    max-height: 200px;
+}
+
+.peer:fullscreen .peer-stream {
+    height: 100%;
 }
 
 .peer-no-stream {
     color: white;
+}
+
+.fullscreen-button-container {
+    display: flex;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.5);
+    gap: 10px;
+}
+
+.peer-volume {
+    display: flex;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 1;
+    width: 100%;
+    max-width: 200px;
+}
+
+.peer-volume svg {
+    color: var(--secondary-color);
+    width: 1.5rem;
+}
+
+.peer-volume input {
+    color: var(--secondary-color);
+    width: 100%;
 }
 
 .bitrate {

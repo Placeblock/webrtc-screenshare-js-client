@@ -4,7 +4,7 @@ const connectionConfig = {
     }]
 }
 
-export default class PeerData {
+export default class Peer {
     uuid;
     name;
     connection;
@@ -13,23 +13,40 @@ export default class PeerData {
     politeNumber = Math.random();
     streamRunning = false;
     makingOffer = false;
-    ignoreOffer = false;
     peerFullscreen = false;
-    remoteVideoElement;
     fullScreen = false;
     onConnect;
     onSendMessage;
+    peerControlElement;
+    peerElement;
+    onPeerFullscreen;
 
-    constructor(uuid, name, remoteVideoElement, onConnect, onSendMessage) {
+    lastSenderBitrateResult = {};
+    lastReceiverBitrateResult = {};
+    sendingBitRate = 0;
+    receivingBitRate = 0;
+    bitRateInterval = null;
+
+    constructor(uuid, name, 
+            peerControlElement,
+            peerElement,
+            onConnect, onSendMessage,
+            onPeerFullscreen) {
         this.uuid = uuid;
         this.name = name;
-        this.remoteVideoElement = remoteVideoElement;
+        this.peerControlElement = peerControlElement;
+        this.peerElement = peerElement;
         this.onConnect = onConnect;
         this.onSendMessage = onSendMessage;
-    }
+        this.onPeerFullscreen = onPeerFullscreen;
 
-    createConnection() {
         this.connection = new RTCPeerConnection(connectionConfig);
+        this.connection.ontrack = this.handleTrackEvent.bind(this);
+        this.connection.onnegotiationneeded = this.handleNegotiationNeededEvent.bind(this);
+        this.connection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent.bind(this);
+        this.connection.onicecandidate = this.handleICECandidateEvent.bind(this);
+
+        this.sendMessage("polite_request", {number: this.politeNumber});
     }
 
     sendMessage(action, data) {
@@ -37,7 +54,7 @@ export default class PeerData {
     }
 
     updateQuality(streamSettings) {
-        const data = streamSettings.getData(this.peerFullscreen);
+        const data = streamSettings[this.peerFullscreen?"fullscreen":"minimized"];
         this.connection.getSenders().forEach((sender) => {
             if (sender.track != null && sender.track.kind === "video") {
                 const parameters = sender.getParameters();
@@ -54,32 +71,36 @@ export default class PeerData {
     }
 
     startStreaming(stream, streamSettings) {
-        this.stopStreaming();
-        if (stream == null) return;
-        for (const track of stream.getTracks()) {
-            this.connection.addTrack(track, stream);
+        try {
+            this.stopStreaming();
+            if (stream == null) return;
+            stream.getTracks().forEach(track => {
+                this.connection.addTrack(track, stream);
+            })
+            this.updateQuality(streamSettings);
+            this.streamRunning = true;
+            this.peerControlElement.setStreaming(true);
+        } catch (error) {
+            alert(error);
         }
-        this.updateQuality(streamSettings);
-        this.streamRunning = true;
     }
 
-    stopSending() {
-        this.connection.getTransceivers().forEach(trans => {
-            trans.stop()
-        })
+    stopStreaming() {
         this.connection.getSenders().forEach((sender) => {
             this.connection.removeTrack(sender);
         })
         this.streamRunning = false;
+        this.peerControlElement.setStreaming(false);
     }
 
     handleTrackEvent({ track, streams }) {
-        track.onunmute = () => {
-            this.remoteVideoElement.srcObject = streams[0];
+        this.peerElement.setStream(streams[0]);
+        streams[0].onremovetrack = () => {
+            this.peerElement.setStream(null);
         }
     }
 
-    set fullScreen(fullScreen) {
+    setFullScreen(fullScreen) {
         this.sendMessage("fullscreen", {fullscreen: fullScreen});
         this.fullScreen = fullScreen;
     }
@@ -114,42 +135,45 @@ export default class PeerData {
             case "description":
                 const description = JSON.parse(data.description);
                 await this.handleReceivedDescription(description);
+                break;
             case "ice_candidate":
                 const candidate = JSON.parse(data.candidate);
                 await this.handleReceivedICECandidate(candidate);
+                break;
             case "polite_request":
                 const senderNumber = data.number;
                 this.handleReceivedPoliteRequest(senderNumber);
+                break;
             case "polite_response":
-                this.handleReceivedPoliteResponse();
+                this.handleReceivedPoliteResponse(data);
+                break;
             case "fullscreen":
                 const fullScreen = data.fullscreen;
                 this.handleReceivedFullscreen(fullScreen);
+                break;
             default:
                 console.warn("Invalid Message received:");
                 console.log(data);
+                break;
         }
     }
 
     handleReceivedFullscreen(fullScreen) {
         this.peerFullscreen = fullScreen;
+        this.onPeerFullscreen();
     }
 
-    handleReceivedPoliteResponse() {
+    handleReceivedPoliteResponse(data) {
         this.peerPolite = data.polite;
         this.polite = !data.polite;
         this.onConnect();
     }
 
     handleReceivedPoliteRequest(number) {
-        this.polite = politeNumber.current>number;
+        this.polite = this.politeNumber>number;
         this.peerPolite = !this.polite;
         this.sendMessage("polite_response", {polite: this.polite});
         this.onConnect();
-    }
-
-    isConnected() {
-        return this.polite!=null&&this.peerPolite!=null;
     }
 
     async handleReceivedICECandidate(candidate) {
@@ -162,18 +186,64 @@ export default class PeerData {
         const offerCollision =
             description.type === "offer" &&
             (this.makingOffer || this.connection.signalingState !== "stable");
-        const ignore = !this.polite && offerCollision;
-        this.ignoreOffer = ignore;
-        if (ignore) {
+        if (!this.polite && offerCollision) {
             return;
         }
-
         await this.connection.setRemoteDescription(description);
         if (description.type === "offer") {
             await this.connection.setLocalDescription();
             const localDesc = this.connection.localDescription;
-            sendMessage("description", { description: JSON.stringify(localDesc) });
+            this.sendMessage("description", { description: JSON.stringify(localDesc) });
         }
+    }
+
+    isConnected() {
+        return this.polite!=null&&this.peerPolite!=null;
+    }
+
+    async updateBitrate() {
+        var newSendingBitrate = 0;
+        var newReceivingBitRate = 0;
+        const transceivers = this.connection.getTransceivers();
+        for (let i = 0; i < transceivers.length; i++) {
+            const t = transceivers[i];
+            if (t.currentDirection == null) return;
+            if (t.currentDirection.includes("recv")) {
+                const res = await t.receiver.getStats();
+                newReceivingBitRate += this.getBitrate(res, this.lastReceiverBitrateResult[i], (rep) => rep.bytesReceived, "inbound-rtp");
+                this.lastReceiverBitrateResult[i] = res;
+            }
+            if (t.currentDirection.includes("send")) {
+                const res = await t.sender.getStats();
+                newSendingBitrate += this.getBitrate(res, this.lastSenderBitrateResult[i], (rep) => rep.bytesSent, "outbound-rtp");
+                this.lastSenderBitrateResult[i] = res;
+            }
+        }
+        this.sendingBitRate = newSendingBitrate;
+        this.receivingBitRate = newReceivingBitRate;
+        this.peerControlElement.setBitrate(this.sendingBitRate);
+        this.peerElement.setBitrate(this.receivingBitRate);
+    }
+
+    getBitrate(result, lastResult, getBytes, type) {
+        for (const [key, rep] of result.entries()) {
+            if (rep.type === type && lastResult !== undefined &&
+                lastResult.has(rep.id)) {
+                const now = rep.timestamp;
+                const bytes = getBytes(rep);
+                const bitrate = 8 * (bytes - getBytes(lastResult.get(rep.id))) /
+                    (now - lastResult.get(rep.id).timestamp);
+                return Math.round(bitrate);
+            }
+        }
+        return 0;
+    }
+
+    remove() {
+        this.stopStreaming();
+        this.connection.close();
+        this.peerElement.remove();
+        this.peerControlElement.remove();
     }
 
 }

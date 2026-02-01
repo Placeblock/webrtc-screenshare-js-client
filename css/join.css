@@ -8,7 +8,7 @@
     gap: 50px;
 }
 
-#join h1 {
+#join h1, #join h2 {
     color: var(--secondary-color);
 }
 
@@ -28,13 +28,30 @@
     outline: none;
 }
 
-#join-form {
+.join-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
 }
 
-#join button {
-    display: block;
+#join input::-webkit-outer-spin-button,
+#join input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#join input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#about-modal p {
+    margin-bottom: 0px;
+}
+
+#about-button {
+    color: var(--secondary-color);
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
 }

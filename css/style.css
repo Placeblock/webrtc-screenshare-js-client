@@ -24,6 +24,10 @@ body, html {
     box-shadow: 0px 0px 10px rgb(34, 34, 34);
 }
 
+*:disabled {
+    opacity: 0.5;
+}
+
 button:not(:disabled):hover {
     cursor: pointer;
 }
@@ -42,4 +46,70 @@ button:not(:disabled):hover {
     height: 2em;
     vertical-align: -0.125em;
     color: var(--primary-color);
+}
+
+
+
+.range {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    width: 100%;
+}
+
+.range::-moz-range-track{
+    background: var(--background-color);
+    height: 0.5rem;
+}
+
+.range::-webkit-slider-runnable-track {
+    background: var(--background-color);
+    height: 0.5rem;
+}
+
+.range::-moz-range-thumb {
+    appearance: none;
+    background-color: var(--secondary-color);
+    border: none;
+    cursor: ew-resize;
+}
+
+.range::-webkit-slider-thumb {
+    appearance: none;
+    background-color: var(--secondary-color);
+    border: none;
+    border-radius: 10px;
+    cursor: ew-resize;
+    width: 12px;
+    height: 12px;
+    margin-top: -2px;
+}
+
+.modal-container {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.modal {
+    width: min(300px, 95%);
+    background-color: var(--background-light-color);
+    padding: 15px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal h1 {
+    color: var(--secondary-color);
+    margin-top: 0px;
+    margin-bottom: 10px;
+    line-height: 25px;
 }
